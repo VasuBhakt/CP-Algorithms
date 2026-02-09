@@ -1,5 +1,5 @@
 //DSU
-//Source : https://github.com/rustyBot31/CP-Algorithms/blob/main/DataStructures/DSUBySize
+//Source : https://github.com/VasuBhakt/CP-Algorithms/blob/main/DataStructures/DSUBySize
 
 // Union-Find (Disjoint Set Union) by Size
 struct DSU {
