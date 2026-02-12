@@ -1,5 +1,5 @@
 //Bridge Tree template
-//Source : https://github.com/rustyBot31/CP-Algorithms/blob/main/Graphs/BridgeTree
+//Source : https://github.com/VasuBhakt/CP-Algorithms/blob/main/Graphs/BridgeTree
 
 int n;
 vector<vector<int>> adj;
