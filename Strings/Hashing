@@ -1,0 +1,52 @@
+// String Hashing
+struct Hashing {
+    ll len;
+    string s;
+    ll MOD1, MOD2;
+    vector<pair<ll, ll>> basepow;
+    vector<pair<ll, ll>> prefixhash;
+    Hashing(string a) { // Constructor
+        s = a;
+        len = s.length();
+        ll base = 313;
+        MOD1 = 1000000007;
+        MOD2 = 1000000009;
+        basepow.resize(len + 1);
+        prefixhash.resize(len + 1);
+        basepow[0] = {1, 1};
+        for (ll i = 1; i <= len; i++) {
+            basepow[i].first = (basepow[i - 1].first * base) % MOD1;
+            basepow[i].second = (basepow[i - 1].second * base) % MOD2;
+        }
+        for (ll i = 0; i < len; i++) {
+            ll num = s[i] + 1;
+            prefixhash[i].first = num;
+            prefixhash[i].second = num;
+            if (i > 0) {
+                prefixhash[i].first = (num + (prefixhash[i - 1].first * base) % MOD1) % MOD1;
+                prefixhash[i].second = (num + (prefixhash[i - 1].second * base) % MOD2) % MOD2;
+            }
+        }
+    }
+    pair<ll, ll> substrhash(ll l, ll r) { // O(1)
+        pair<ll, ll> res;
+        res.first = prefixhash[r].first;
+        res.second = prefixhash[r].second;
+        if (l > 0) {
+            ll sublen = r - l + 1;
+            ll sub1 = (prefixhash[l - 1].first * basepow[sublen].first) % MOD1;
+            res.first = (res.first - sub1 + MOD1) % MOD1;
+            ll sub2 = (prefixhash[l - 1].second * basepow[sublen].second) % MOD2;
+            res.second = (res.second - sub2 + MOD2) % MOD2;
+        }
+        return res;
+    }
+    pair<ll, ll> add(pair<ll, ll> hashfront, pair<ll, ll> hashback, ll lenback) {
+        // h(a) = hashfront , h(b) = hashback , lenback = length of b
+        // h(a + b) = hashfront * basepow[lenback] + hashback (under mod)
+        pair<ll, ll> res;
+        res.first = ((hashfront.first * basepow[lenback].first) % MOD1 + hashback.first) % MOD1;
+        res.second = ((hashfront.second * basepow[lenback].second) % MOD2 + hashback.second) % MOD2; 
+        return res;
+    }
+};
