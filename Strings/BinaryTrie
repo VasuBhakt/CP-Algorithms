@@ -1,0 +1,82 @@
+struct Node {
+    ll numend;
+    ll numprefix;
+    ll children[2];
+    Node() {
+        numend = 0;
+        numprefix = 0;
+        for (ll i = 0; i < 2; i++) {
+            children[i] = -1;
+        }
+    }
+};
+struct BinaryTrie {
+    vector<Node> tree;
+    BinaryTrie() {
+        tree.emplace_back(Node());
+    }
+    void add(ll num) {
+        ll curnode = 0;
+        for (ll i = 63; i >= 0; i--) {
+            ll bit = (num >> i) & 1;
+            if (tree[curnode].children[bit] == -1) {
+                tree[curnode].children[bit] = (ll)tree.size();
+                tree.emplace_back(Node());
+            }
+            curnode = tree[curnode].children[bit];
+            tree[curnode].numprefix++;
+        }
+        tree[curnode].numend++;
+    }
+    pair<ll, ll> numcnt(ll num) {
+        pair<ll, ll> res = {-1, -1};
+        ll curnode = 0;
+        for (ll i = 63; i >= 0; i--) {
+            ll bit = (num >> i) & 1;
+            if (tree[curnode].children[bit] == -1) {
+                return res;
+            }
+            curnode = tree[curnode].children[bit];
+        }
+        res.first = tree[curnode].numprefix;
+        res.second = tree[curnode].numend;
+        return res;
+    }
+    void del(ll num) {
+        if (numcnt(num).second <= 0) {
+            return;
+        }
+        ll curnode = 0;
+        for (ll i = 63; i >= 0; i--) {
+            ll bit = (num >> i) & 1;
+            ll child = tree[curnode].children[bit];
+            tree[child].numprefix--;
+            if (tree[child].numprefix == 0) {
+                tree[curnode].children[bit] = -1;
+            }
+            curnode = child;
+        }
+        tree[curnode].numend--;
+    }
+    ll maxxor(ll num) {
+        ll res = 0;
+        ll curnode = 0;
+        for (ll i = 63; i >= 0; i--) {
+            ll bit = (num >> i) & 1;
+            ll req = 1 - bit;
+            if (tree[curnode].children[req] != -1) {
+                if (req == 1) {
+                    res |= (1LL << i);
+                }
+                curnode = tree[curnode].children[req];
+            }
+            else {
+                if (bit == 1) {
+                    res |= (1LL << i);
+                }
+                curnode = tree[curnode].children[bit];
+            }
+        }
+        return res ^ num;
+    }
+};
