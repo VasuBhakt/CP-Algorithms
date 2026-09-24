@@ -1,0 +1,61 @@
+struct Node {
+    ll wordend;
+    ll wordprefix;
+    ll children[26];
+    Node() {
+        wordend = 0;
+        wordprefix = 0;
+        for (ll i = 0; i < 26; i++) {
+            children[i] = -1;
+        }
+    }
+};
+struct PrefixTree {
+    vector<Node> tree;
+    PrefixTree() {
+        tree.emplace_back(Node());
+    }
+    void add(const string &w) {
+        ll curnode = 0;
+        for (auto c : w) {
+            ll idx = c - 'a';
+            if (tree[curnode].children[idx] == -1) {
+                tree[curnode].children[idx] = (ll)tree.size();
+                tree.emplace_back(Node());
+            }
+            curnode = tree[curnode].children[idx];
+            tree[curnode].wordprefix++;
+        }
+        tree[curnode].wordend++;
+    }
+    pair<ll, ll> wordcnt(const string &w) {
+        pair<ll, ll> res = {-1, -1};
+        ll curnode = 0;
+        for (auto c : w) {
+            ll idx = c - 'a';
+            if (tree[curnode].children[idx] == -1) {
+                return res;
+            }
+            curnode = tree[curnode].children[idx];
+        }
+        res.first = tree[curnode].wordprefix;
+        res.second = tree[curnode].wordend;
+        return res;
+    }
+    void del(const string &w) {
+        if (wordcnt(w).second <= 0) {
+            return;
+        }
+        ll curnode = 0;
+        for (auto c : w) {
+            ll idx = c - 'a';
+            ll child = tree[curnode].children[idx];
+            tree[child].wordprefix--;
+            if (tree[child].wordprefix == 0) {
+                tree[curnode].children[idx] = -1;
+            }
+            curnode = child;
+        }
+        tree[curnode].wordend--;
+    }
+};
